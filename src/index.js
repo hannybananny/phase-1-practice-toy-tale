@@ -12,6 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
       toyFormContainer.style.display = "none";
     }
   });
+  
+  const toyForm = document.querySelector("form")
+  toyForm.addEventListener('submit', handleSumbit)
+
+  function handleSumbit(e){
+    e.preventDefault()
+    let toyObj = {
+      name: e.target.name.value,
+      image: e.target.image.value,
+      likes: 0
+  }
+  addNewToy(toyObj)
+  toyForm.reset()
+}
 
   function getToys(){
     fetch('http://localhost:3000/toys')
@@ -20,16 +34,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderToy(toy){
+    let toyCollection = document.getElementById("toy-collection")
     let toyCard = document.createElement('div')
-    toyCard.classList.add('card')
-    toyCard.innerHTML = `
-      <h2>${toy.name}</h2>
-      <img src="${toy.image}">
-      <p>${toy.likes} ' likes'<p>
-      <button class="like-btn" id"${toy.id}">Like ❤️</button>
-      </div>
-    `
-    toyFormContainer.appendChild(toyCard)
+      toyCard.classList.add('card')
+    let h2 = document.createElement('h2')
+      h2.innerText = `${toy.name}`
+    let toyImg = document.createElement('img')
+      toyImg.classList.add('toy-avatar')
+      toyImg.src = `${toy.image}`
+    let p = document.createElement('p')
+      p.setAttribute('id', 'likes')
+      p.innerText = `${toy.likes}` + ' likes'
+    let likeBtn = document.createElement('button')
+      likeBtn.classList.add('like-btn')
+      likeBtn.setAttribute('id', `$toy.id`)
+      likeBtn.innerText = 'Like ❤️'
+    toyCard.append(h2, toyImg, p, likeBtn)
+    toyCollection.appendChild(toyCard)
+
+    console.log(document.getElementById(`${toy.likes}`))
+    // likeBtn.addEventListener('click', () =>{
+    //   toy.likes+= 1
+    //   document.querySelector('#likes').textContent = toy.likes
+     
+    // })
+  }
+
+
+  function addNewToy(toyObj){
+    fetch('http://localhost:3000/toys',{
+      method: 'POST',
+      headers: {
+        "Content-type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify(toyObj)
+    })
+    .then(res => res.json())
+    .then(toy => renderToy(toy))
   }
 
 
