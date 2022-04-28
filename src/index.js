@@ -43,21 +43,21 @@ document.addEventListener("DOMContentLoaded", () => {
       toyImg.classList.add('toy-avatar')
       toyImg.src = `${toy.image}`
     let p = document.createElement('p')
-      p.setAttribute('id', 'likes')
+      p.setAttribute('id', `${toy.name}`)
       p.innerText = `${toy.likes}` + ' likes'
     let likeBtn = document.createElement('button')
       likeBtn.classList.add('like-btn')
-      likeBtn.setAttribute('id', `$toy.id`)
+      likeBtn.setAttribute('id', `${toy.id}`)
       likeBtn.innerText = 'Like ❤️'
     toyCard.append(h2, toyImg, p, likeBtn)
     toyCollection.appendChild(toyCard)
 
-    console.log(document.getElementById(`${toy.likes}`))
-    // likeBtn.addEventListener('click', () =>{
-    //   toy.likes+= 1
-    //   document.querySelector('#likes').textContent = toy.likes
-     
-    // })
+    let indivLikeBtn = document.getElementById(`${toy.id}`)
+    indivLikeBtn.addEventListener('click', () =>{
+      toy.likes+= 1
+      document.getElementById(`${toy.name}`).textContent = toy.likes + ' likes'
+      updateLikes(toy)
+    })
   }
 
 
@@ -74,6 +74,21 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(toy => renderToy(toy))
   }
 
+  function updateLikes(toy){
+    fetch(`http://localhost:3000/toys/${toy.id}`, {
+    method: 'PATCH',
+    headers: 
+      {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      
+      body: JSON.stringify(toy)
+    
+  })
+
+  .then(res => res.json())
+  }
 
 getToys()
 });
